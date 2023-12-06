@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+model Customers {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  projectId    Int             @default(0)
+  firstname    String
+  middlename   String          @default("")
+  surname      String
+  prescription Prescriptions[]
+}
+
+model Units {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name String
+}
+
+model Products {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  units       Unit[]
+  inventories Inventories[]
+  
+}
+
+model Inventories {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  product   Products @relation(fields: [productId], references: [id])
+  productId String   @db.ObjectId
+  outlet    Stores   @relation(fields: [outletId], references: [id])
+  outletId  String   @db.ObjectId
+  quantity  Int
+  price     Price[]
+  dispensed Dispensed[]
+  requested Requested[]
+}
+
+model Prescriptions {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime    @db.Date @default(now())
+  customer   Customers    @relation(fields: [customerId], references: [id])
+  customerId String      @db.ObjectId
+  outlet     Stores      @relation(fields: [outletId], references: [id])
+  outletId   String      @db.ObjectId
+  items      Dispensed[]
+}
+
+model Dispensed {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  inventory        Inventories      @relation(fields: [inventoryId], references: [id])
+  inventoryId      String        @db.ObjectId
+  prescription   Prescriptions @relation(fields: [prescriptionId], references: [id])
+  prescriptionId String        @db.ObjectId
+  quantity       Int
+  unit           String
+  unitValue Int
+}
+
+model Requests {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  date         DateTime    @db.Date @default(now())
+  fromOutlet   Stores      @relation("fromOutletStore", fields: [fromOutletId], references: [id])
+  fromOutletId String      @db.ObjectId
+  toOutlet     Stores      @relation("toOutletStore", fields: [fromOutletId], references: [id])
+  toOutletId   String      @db.ObjectId
+  items        Requested[]
+}
+
+model Requested {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+ inventory        Inventories      @relation(fields: [inventoryId], references: [id])
+  inventoryId      String        @db.ObjectId
+  request   Requests @relation(fields: [requestId], references: [id])
+  requestId String   @db.ObjectId
+  quantity  Int
+  unit      String
+  issued    Boolean  @default(false)
+}
+
+model Logs {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  date DateTime @default(now()) @db.Date
+  log  String
+}
+
+model Stores {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  isWarehouse  Boolean
+  name         String
+  inventory    Inventories[]
+  prescription Prescriptions[]
+  fromOutlet   Requests[]      @relation("fromOutletStore")
+  toOutlet     Requests[]      @relation("toOutletStore")
+}
+
+model Suppliers {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+}
+
+type Unit {
+  name  String
+  value Int
+}
+
+model Price {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  unit        String
+  price       Int
+  inventory   Inventories @relation(fields: [inventoryId], references: [id])
+  inventoryId String      @db.ObjectId
+}

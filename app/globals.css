@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+}
+.main-header {
+  height: 10vh;
+}
+.main-content {
+  height: 85vh;
+  overflow-y: scroll;
+}
+.outlet-page {
+  height: 100%;
+}
+.outlet-nav {
+  height: 5vh;
+}
+.outlet-content {
+  height: 80vh;
+  overflow-y: scroll;
+}
+.main-content::-webkit-scrollbar {
+  display: none;
+}
+footer {
+  height: 5vh;
+}
+ul.flex li:hover {
+  color: red;
+}
+.inventory-table {
+  height: 70vh;
+  overflow-y: scroll;
+}
+.inventory-table::-webkit-scrollbar {
+  display: none;
+}
+/* code for outlet section display and form area */
+.outlet-section {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  grid-row: 100%;
+  height: 100%;
+}
+/* manage-container */
+.manage-container {
+  display: grid;
+  grid-template-columns: 20% 80%;
+}
+@media print {
+  .list,
+  header,
+  footer {
+    display: none;
+  }
+}
